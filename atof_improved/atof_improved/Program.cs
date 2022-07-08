@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace atof_improved
 {
     class Program
     {
-        static double AtofImproved(string number)
+        private const string ErrorPath = "../../../../output.err";
+
+        public static double AtofImproved(string number)
         {
             number = number.ToLower();
             string pattern = @"^[+-]?[0-9]+(\.[0-9]+)?([e][+-]?[0-9]+)?$"; //because there is used method ToLower there is no need for asking if number contains E
@@ -51,20 +55,29 @@ namespace atof_improved
 
         static void Main(string[] args)
         {
-            while(true)
+            List<InputData> dataList =  Csv.ReadCsvFile();
+            int line = 0;
+            if(File.Exists(ErrorPath))
             {
-                Console.WriteLine("Unesi broj");
-                string number = Console.ReadLine();
+                File.Delete(ErrorPath);
+            }
 
+            StreamWriter streamWriter = new StreamWriter(ErrorPath, true);
+
+            foreach (var data in dataList)
+            {
+                line++;
                 try
                 {
-                    Console.WriteLine(AtofImproved(number));
+                    data.ResultValue = AtofImproved(data.Result);
                 }
-                catch(Exception e)
+                catch (Exception ex)
                 {
-                    Console.WriteLine(e.Message);
+                    streamWriter.WriteLine("Line {0} cannot be converted into a number. Original value {1} date {2}.", line, data.Result, data.DateTime.ToShortDateString());
                 }
             }
+
+            streamWriter.Close();
         }
     }
 }
