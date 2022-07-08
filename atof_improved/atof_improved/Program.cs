@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace atof_improved
 {
     class Program
     {
         private const string ErrorPath = "../../../../output.err";
+        private const string OutputPath = "../../../../output.csv";
 
         public static double AtofImproved(string number)
         {
@@ -55,9 +57,9 @@ namespace atof_improved
 
         static void Main(string[] args)
         {
-            List<InputData> dataList =  Csv.ReadCsvFile();
+            List<InputData> dataList = Csv.ReadCsvFile();
             int line = 0;
-            if(File.Exists(ErrorPath))
+            if (File.Exists(ErrorPath))
             {
                 File.Delete(ErrorPath);
             }
@@ -77,6 +79,33 @@ namespace atof_improved
                 }
             }
 
+            var dataByYearAndMounth =
+                from d in dataList
+                group d by new
+                {
+                    d.Year,
+                    d.Month
+                } into groupData
+                select new OutputData()
+                {
+                    Year = groupData.Key.Year,
+                    Month = groupData.Key.Month,
+                    NumberOfMeasures = groupData.Count(),
+                    Sum = groupData.Sum(x => x.ResultValue)
+                };
+
+            if (File.Exists(OutputPath))
+            {
+                File.Delete(OutputPath);
+            }
+            StreamWriter outputWriter = new StreamWriter(OutputPath, true);
+            outputWriter.WriteLine("Mesec,Godina,UkupnoMerenja,Suma");
+            foreach(var x in dataByYearAndMounth)
+            {
+                outputWriter.WriteLine(x.Year + "," + x.getNameOfMonth(x.Month) + "," + x.NumberOfMeasures + "," + x.Sum);
+                Console.WriteLine(x.Year + " " + x.getNameOfMonth(x.Month) + " " + x.NumberOfMeasures + " " + x.Sum);
+            }
+            outputWriter.Close();
             streamWriter.Close();
         }
     }
