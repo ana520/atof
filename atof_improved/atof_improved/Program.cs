@@ -55,16 +55,23 @@ namespace atof_improved
             }
         }
 
+        static StreamWriter CreateFile(string path)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            return new StreamWriter(path, true);
+        }
+
+
         static void Main(string[] args)
         {
             List<InputData> dataList = Csv.ReadCsvFile();
-            int line = 0;
-            if (File.Exists(ErrorPath))
-            {
-                File.Delete(ErrorPath);
-            }
+            int line = 1; //because of header
 
-            StreamWriter streamWriter = new StreamWriter(ErrorPath, true);
+            StreamWriter streamWriter = CreateFile(ErrorPath);
 
             foreach (var data in dataList)
             {
@@ -72,9 +79,11 @@ namespace atof_improved
                 try
                 {
                     data.ResultValue = AtofImproved(data.Result);
+                    data.Error = false;
                 }
                 catch (Exception ex)
                 {
+                    data.Error = true;
                     streamWriter.WriteLine("Line {0} cannot be converted into a number. Original value {1} date {2}.", line, data.Result, data.DateTime.ToShortDateString());
                 }
             }
@@ -90,21 +99,17 @@ namespace atof_improved
                 {
                     Year = groupData.Key.Year,
                     Month = groupData.Key.Month,
-                    NumberOfMeasures = groupData.Count(),
+                    NumberOfMeasures = groupData.Where(x => x.Error == false).Count(), //count measures only if result is good
                     Sum = groupData.Sum(x => x.ResultValue)
                 };
 
-            if (File.Exists(OutputPath))
-            {
-                File.Delete(OutputPath);
-            }
-            StreamWriter outputWriter = new StreamWriter(OutputPath, true);
+            StreamWriter outputWriter = CreateFile(OutputPath);
             outputWriter.WriteLine("Mesec,Godina,UkupnoMerenja,Suma");
             foreach(var x in dataByYearAndMounth)
             {
                 outputWriter.WriteLine(x.Year + "," + x.getNameOfMonth(x.Month) + "," + x.NumberOfMeasures + "," + x.Sum);
-                Console.WriteLine(x.Year + " " + x.getNameOfMonth(x.Month) + " " + x.NumberOfMeasures + " " + x.Sum);
             }
+
             outputWriter.Close();
             streamWriter.Close();
         }

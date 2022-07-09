@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace atof_improved
+﻿namespace atof_improved
 {
     public class OutputData
     {
@@ -41,7 +37,6 @@ namespace atof_improved
                     return "Decembar";
                 default:
                     return "Greska";
-                    break;
             }
         }
     }

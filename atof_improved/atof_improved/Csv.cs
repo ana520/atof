@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace atof_improved
 {
@@ -25,10 +23,12 @@ namespace atof_improved
                     char separator;
                     foreach (var record in records)
                     {
-                        InputData data = new InputData();
-                        data.Date = record.Date;
-                        data.Comment = record.Comment;
-                        data.Result = record.Result;
+                        InputData data = new InputData
+                        {
+                            Date = record.Date,
+                            Comment = record.Comment,
+                            Result = record.Result
+                        };
 
                         if (record.Date.Contains("."))
                         {

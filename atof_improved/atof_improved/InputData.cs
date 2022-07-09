@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace atof_improved
 {
@@ -11,5 +9,6 @@ namespace atof_improved
         public int Year { get; set; }
         public DateTime DateTime { get; set; }
         public double ResultValue { get; set; }
+        public bool Error { get; set; }
     }
 }
