@@ -103,6 +103,8 @@ namespace atof_improved
                     Sum = groupData.Sum(x => x.ResultValue)
                 };
 
+            dataByYearAndMounth = dataByYearAndMounth.OrderBy(x => x.Year).ThenBy(x => x.Month);
+
             StreamWriter outputWriter = CreateFile(OutputPath);
             outputWriter.WriteLine("Mesec,Godina,UkupnoMerenja,Suma");
             foreach(var x in dataByYearAndMounth)
